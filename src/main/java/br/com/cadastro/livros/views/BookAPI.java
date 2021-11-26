@@ -28,7 +28,7 @@ public interface BookAPI {
 
     @ApiOperation(value = "Procurar livro pelo título")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Apresenta uma mensagem caso DELETOU o livro"),
+            @ApiResponse(code = 200, message = "Apresenta uma mensagem caso encontrou o livro"),
             @ApiResponse(code = 204, message = "Apresenta uma mensagem caso não encontrou nenhum resultado"),
             @ApiResponse(code = 403, message = "Apresenta uma mensagem quando não tem permissão para essa ação"),
             @ApiResponse(code = 406, message = "Quando alguma das regras forem quebradas"),
@@ -38,7 +38,7 @@ public interface BookAPI {
 
     @ApiOperation(value = "Listar livros pelo nome do autor")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Apresenta uma mensagem caso DELETOU o livro"),
+            @ApiResponse(code = 200, message = "Apresenta uma mensagem caso encontrou todos os livros"),
             @ApiResponse(code = 204, message = "Apresenta uma mensagem caso não encontrou nenhum resultado"),
             @ApiResponse(code = 403, message = "Apresenta uma mensagem quando não tem permissão para essa ação"),
             @ApiResponse(code = 406, message = "Quando alguma das regras forem quebradas"),
