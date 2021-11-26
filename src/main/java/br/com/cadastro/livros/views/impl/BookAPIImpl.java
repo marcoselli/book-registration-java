@@ -1,27 +1,44 @@
 package br.com.cadastro.livros.views.impl;
 
+import br.com.cadastro.livros.controllers.BookControl;
 import br.com.cadastro.livros.views.BookAPI;
 import br.com.cadastro.livros.views.dtos.BookDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping(path = "/books")
 public class BookAPIImpl implements BookAPI {
+
+    private BookControl bookControl;
+
+    @Autowired
+    public BookAPIImpl(BookControl bookControl) {
+        this.bookControl = bookControl;
+    }
+
     @Override
-    public ResponseEntity merge(BookDTO bookDTO) {
+    @PostMapping(value = "/salvar")
+    public ResponseEntity merge(@RequestBody BookDTO bookDTO) {
         return null;
     }
 
     @Override
-    public ResponseEntity delete(String bookTitle) {
+    @PostMapping(value = "/deletar/{bookTitle}")
+    public ResponseEntity delete(@PathVariable String bookTitle) {
         return null;
     }
 
     @Override
-    public ResponseEntity findByTitle(String bookTittle) {
+    @GetMapping(value = "/buscar-por-nome-livro/{bookTittle}")
+    public ResponseEntity findByTitle(@PathVariable String bookTittle) {
         return null;
     }
 
     @Override
-    public ResponseEntity findByAuthor(String authorName) {
+    @GetMapping(value = "/buscar-por-nome-autor/{bookTittle}")
+    public ResponseEntity findByAuthor(@PathVariable String authorName) {
         return null;
     }
 }
