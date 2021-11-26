@@ -2,12 +2,14 @@ package br.com.cadastro.livros.repositories;
 
 import br.com.cadastro.livros.repositories.entities.BookEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface BookRepository extends JpaRepository<BookEntity, Long> {
+@Repository
+public interface BookRepository extends JpaRepository<BookEntity,Long>{
 
     BookEntity findByTitle(String title);
-    List<BookEntity> findByAuthor(String authorName);
+    List<BookEntity> findByAuthorName(String authorName);
 
 }
