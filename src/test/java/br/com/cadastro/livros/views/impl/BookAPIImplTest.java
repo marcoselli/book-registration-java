@@ -7,6 +7,7 @@ import br.com.cadastro.livros.entities.BookAPI;
 import br.com.cadastro.livros.entities.BookController;
 import br.com.cadastro.livros.views.dtos.BookDTO;
 import br.com.cadastro.livros.views.dtos.ResponseErrorDTO;
+import org.dom4j.DocumentException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -124,21 +125,143 @@ class BookAPIImplTest {
     }
 
     @Test
-    void testDelete() {
-        ResponseEntity result = bookAPIImpl.delete("bookTitle");
-        Assertions.assertEquals(null, result);
+    @DisplayName("DELETE BookAPI - Deletar corretamente")
+    //DELETE - 201 CREATED
+    void ShouldDeleteBook() throws BookException {
+        doNothing().when(bookControl).delete(anyString());
+        ResponseEntity response = bookAPIImpl.delete("abc");
+
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.CREATED).body(null);
+
+        Assertions.assertEquals(responseExpected, response);
     }
 
     @Test
-    void testFindByTitle() {
-        ResponseEntity result = bookAPIImpl.findByTitle("bookTittle");
-        Assertions.assertEquals(null, result);
+    @DisplayName("DELETE BookAPI - Excessão de título em branco")
+    //DELETE - 400 BAD REQUEST
+    void ShouldReturnTitleBlankExceptionWhenDelete() throws BookException {
+        doThrow(new BookException("Nome do título deve estar preenchido.", "title"))
+                .when(bookControl).delete(anyString());
+        ResponseEntity response = bookAPIImpl.delete("");
+
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ResponseErrorDTO.builder()
+                        .errorMessage("Nome do título deve estar preenchido.")
+                        .errorObject("Livro")
+                        .build());
+
+        Assertions.assertEquals(responseExpected, response);
     }
 
     @Test
-    void testFindByAuthor() {
-        ResponseEntity result = bookAPIImpl.findByAuthor("authorName");
-        Assertions.assertEquals(null, result);
+    @DisplayName("DELETE BookAPI - Excessão de livro não encontrado")
+    //DELETE - 204 NO CONTENT
+    void ShouldReturnBookNotFoundExceptionWhenDelete() throws BookException {
+        doThrow(new BookException("Livro não encontrado.", "title"))
+                .when(bookControl).delete(anyString());
+        ResponseEntity response = bookAPIImpl.delete("abc");
+
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ResponseErrorDTO.builder()
+                        .errorMessage("Livro não encontrado.")
+                        .errorObject("Livro")
+                        .build());
+
+        Assertions.assertEquals(responseExpected, response);
+    }
+
+    @Test
+    @DisplayName("FindByTitle BookAPI - Deve encontrar o livro corretamente")
+    //FindByTitle - 200 OK
+    void ShouldFindBookByTitle() throws BookException {
+        when(bookControl.findByTitle(anyString())).thenReturn(BookController.buildFullBook());
+        ResponseEntity response = bookAPIImpl.findByTitle("abc");
+
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.OK)
+                .body(BookAPI.buildFullBook());
+
+        Assertions.assertEquals(responseExpected, response);
+    }
+
+    @Test
+    @DisplayName("FindByTitle BookAPI - Excessão de título em branco")
+    //FindByTitle - 400 BAD REQUEST
+    void ShouldReturnTitleBlankExceptionWhenFindByTitle() throws BookException {
+        when(bookControl.findByTitle(anyString()))
+                .thenThrow(new BookException("Nome do título deve estar preenchido.","title"));
+        ResponseEntity response = bookAPIImpl.findByTitle("");
+
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ResponseErrorDTO.builder()
+                        .errorMessage("Nome do título deve estar preenchido.")
+                        .errorObject("Livro")
+                        .build());
+
+        Assertions.assertEquals(responseExpected, response);
+    }
+
+    @Test
+    @DisplayName("FindByTitle BookAPI - Excessão de livro não encontrado")
+    //FindByTitle - 204 NO CONTENT
+    void ShouldReturnBookNotFoundExceptionWhenFindByTitle() throws BookException {
+        when(bookControl.findByTitle(anyString()))
+                .thenThrow(new BookException("Livro não encontrado.","title"));
+        ResponseEntity response = bookAPIImpl.findByTitle("abc");
+
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ResponseErrorDTO.builder()
+                        .errorMessage("Livro não encontrado.")
+                        .errorObject("Livro")
+                        .build());
+
+        Assertions.assertEquals(responseExpected, response);
+    }
+
+    @Test
+    @DisplayName("FindByAuthorName BookAPI - Deve encontrar o livro corretamente")
+    //FindByAuthorName - 200 OK
+    void ShouldFindBookByFindByAuthorName() throws BookException {
+        when(bookControl.findByAuthorName(anyString())).thenReturn(BookController.buildFullBookList());
+        ResponseEntity response = bookAPIImpl.findByAuthor("abc");
+
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.OK)
+                .body(BookAPI.buildFullBookList());
+
+        Assertions.assertEquals(responseExpected, response);
+    }
+
+    @Test
+    @DisplayName("FindByAuthorName BookAPI - Excessão de título em branco")
+    //FindByAuthorName - 400 BAD REQUEST
+    void ShouldReturnTitleBlankExceptionWhenFindByAuthorName() throws BookException {
+        when(bookControl.findByAuthorName(anyString()))
+                .thenThrow(new BookException("Nome do título deve estar preenchido.","title"));
+        ResponseEntity response = bookAPIImpl.findByAuthor("");
+
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ResponseErrorDTO.builder()
+                        .errorMessage("Nome do título deve estar preenchido.")
+                        .errorObject("Livro")
+                        .build());
+
+        Assertions.assertEquals(responseExpected, response);
+    }
+
+    @Test
+    @DisplayName("FindByAuthorName BookAPI - Excessão de livros não encontrados")
+    //FindByAuthorName - 204 NO CONTENT
+    void ShouldReturnBooksNotFoundWhenFindByAuthorName() throws BookException {
+        when(bookControl.findByAuthorName(anyString()))
+                .thenThrow(new BookException("Livro não encontrado.","title"));
+        ResponseEntity response = bookAPIImpl.findByAuthor("");
+
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ResponseErrorDTO.builder()
+                        .errorMessage("Livro não encontrado.")
+                        .errorObject("Livro")
+                        .build());
+
+        Assertions.assertEquals(responseExpected, response);
     }
 }
 

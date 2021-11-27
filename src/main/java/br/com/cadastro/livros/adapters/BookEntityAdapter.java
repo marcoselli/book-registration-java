@@ -1,18 +1,18 @@
 package br.com.cadastro.livros.adapters;
 
 import br.com.cadastro.livros.controllers.Book;
-import br.com.cadastro.livros.views.dtos.BookDTO;
+import br.com.cadastro.livros.repositories.entities.BookEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BookDTOAdapter {
+public class BookEntityAdapter {
 
-    private BookDTOAdapter() {
+    private BookEntityAdapter() {
     }
 
-    public static BookDTO convertBookToBookDTO(Book book){
-        return BookDTO.builder()
+    public static BookEntity convertBookToBookEntity(Book book){
+        return BookEntity.builder()
                 .title(book.getTitle())
                 .caption(book.getCaption())
                 .summary(book.getSummary())
@@ -20,9 +20,9 @@ public class BookDTOAdapter {
                 .build();
     }
 
-    public static List<BookDTO> convertBookListToBookDTOList(List<Book> bookList){
+    public static List<BookEntity> convertBookListToBookEntityList(List<Book> bookList){
         return bookList.stream()
-                .map(book -> convertBookToBookDTO(book))
+                .map(book -> convertBookToBookEntity(book))
                 .collect(Collectors.toList());
     }
 }

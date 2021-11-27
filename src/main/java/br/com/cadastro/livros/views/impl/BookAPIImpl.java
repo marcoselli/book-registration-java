@@ -1,6 +1,8 @@
 package br.com.cadastro.livros.views.impl;
 
 import br.com.cadastro.livros.adapters.BookAdapter;
+import br.com.cadastro.livros.adapters.BookDTOAdapter;
+import br.com.cadastro.livros.controllers.Book;
 import br.com.cadastro.livros.controllers.BookControl;
 import br.com.cadastro.livros.controllers.exception.BookException;
 import br.com.cadastro.livros.controllers.utils.BookUtil;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/books")
@@ -41,18 +45,69 @@ public class BookAPIImpl implements BookAPI {
     @Override
     @PostMapping(value = "/deletar/{bookTitle}")
     public ResponseEntity delete(@PathVariable String bookTitle) {
-        return null;
+
+        try {
+            bookControl.delete(bookTitle);
+            return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        }
+        catch (BookException exception) {
+            if(exception.getMessage().equals("Livro não encontrado."))
+                return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                        .body(ResponseErrorDTO.builder()
+                                .errorMessage(exception.getMessage())
+                                .errorObject("Livro")
+                                .build());
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResponseErrorDTO.builder()
+                    .errorMessage(exception.getMessage())
+                    .errorObject("Livro")
+                    .build());
+        }
     }
 
     @Override
     @GetMapping(value = "/buscar-por-nome-livro/{bookTittle}")
     public ResponseEntity findByTitle(@PathVariable String bookTittle) {
-        return null;
+        try {
+            BookDTO bookDTO = BookDTOAdapter.convertBookToBookDTO(bookControl.findByTitle(bookTittle));
+            return ResponseEntity.status(HttpStatus.OK).body(bookDTO);
+        } catch (BookException exception) {
+            if(exception.getMessage().equals("Livro não encontrado."))
+                return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                        .body(ResponseErrorDTO.builder()
+                                .errorMessage(exception.getMessage())
+                                .errorObject("Livro")
+                                .build());
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResponseErrorDTO.builder()
+                            .errorMessage(exception.getMessage())
+                            .errorObject("Livro")
+                            .build());
+        }
     }
 
     @Override
     @GetMapping(value = "/buscar-por-nome-autor/{bookTittle}")
     public ResponseEntity findByAuthor(@PathVariable String authorName) {
-        return null;
+        try {
+            List<BookDTO> bookDTOList = BookDTOAdapter
+                    .convertBookListToBookDTOList(bookControl.findByAuthorName(authorName));
+            return ResponseEntity.status(HttpStatus.OK).body(bookDTOList);
+        } catch (BookException exception) {
+            if(exception.getMessage().equals("Livro não encontrado."))
+                return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                        .body(ResponseErrorDTO.builder()
+                                .errorMessage(exception.getMessage())
+                                .errorObject("Livro")
+                                .build());
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResponseErrorDTO.builder()
+                            .errorMessage(exception.getMessage())
+                            .errorObject("Livro")
+                            .build());
+        }
     }
 }
