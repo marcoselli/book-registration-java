@@ -6,12 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class BookDTO {
-    private String title;
-    private String caption;
-    private String summary;
-    private String authorName;
+public class ResponseErrorDTO {
+    private String errorMessage;
+    private String errorObject;
 }
