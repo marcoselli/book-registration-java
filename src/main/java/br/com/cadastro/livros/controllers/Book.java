@@ -1,4 +1,4 @@
-package br.com.cadastro.livros.views.dtos;
+package br.com.cadastro.livros.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,10 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class BookDTO {
+public class Book {
     private String title;
     private String caption;
     private String summary;
