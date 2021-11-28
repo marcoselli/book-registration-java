@@ -122,16 +122,18 @@ class BookAPIImplTest {
                         .build());
 
         Assertions.assertEquals(responseExpected, response);
+
     }
 
     @Test
     @DisplayName("DELETE BookAPI - Deletar corretamente")
     //DELETE - 201 CREATED
     void ShouldDeleteBook() throws BookException {
-        doNothing().when(bookControl).delete(anyString());
+        when(bookControl.delete(anyString())).thenReturn(BookController.buildFullBook());
         ResponseEntity response = bookAPIImpl.delete("abc");
 
-        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.CREATED).body(null);
+        ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.CREATED)
+                .body(BookAPI.buildFullBook());
 
         Assertions.assertEquals(responseExpected, response);
     }
@@ -140,8 +142,8 @@ class BookAPIImplTest {
     @DisplayName("DELETE BookAPI - Excessão de título em branco")
     //DELETE - 400 BAD REQUEST
     void ShouldReturnTitleBlankExceptionWhenDelete() throws BookException {
-        doThrow(new BookException("Nome do título deve estar preenchido.", "title"))
-                .when(bookControl).delete(anyString());
+        when(bookControl.delete(anyString()))
+                .thenThrow(new BookException("Nome do título deve estar preenchido.", "title"));
         ResponseEntity response = bookAPIImpl.delete("");
 
         ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -157,8 +159,8 @@ class BookAPIImplTest {
     @DisplayName("DELETE BookAPI - Excessão de livro não encontrado")
     //DELETE - 204 NO CONTENT
     void ShouldReturnBookNotFoundExceptionWhenDelete() throws BookException {
-        doThrow(new BookException("Livro não encontrado.", "title"))
-                .when(bookControl).delete(anyString());
+        when(bookControl.delete(anyString()))
+                .thenThrow(new BookException("Livro não encontrado.", "title"));
         ResponseEntity response = bookAPIImpl.delete("abc");
 
         ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.NO_CONTENT)
@@ -252,12 +254,12 @@ class BookAPIImplTest {
     //FindByAuthorName - 204 NO CONTENT
     void ShouldReturnBooksNotFoundWhenFindByAuthorName() throws BookException {
         when(bookControl.findByAuthorName(anyString()))
-                .thenThrow(new BookException("Livro não encontrado.","title"));
+                .thenThrow(new BookException("Nenhum livro relacionado ao autor.","title"));
         ResponseEntity response = bookAPIImpl.findByAuthor("");
 
         ResponseEntity responseExpected = ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(ResponseErrorDTO.builder()
-                        .errorMessage("Livro não encontrado.")
+                        .errorMessage("Nenhum livro relacionado ao autor.")
                         .errorObject("Livro")
                         .build());
 

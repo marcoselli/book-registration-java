@@ -47,8 +47,8 @@ public class BookAPIImpl implements BookAPI {
     public ResponseEntity delete(@PathVariable String bookTitle) {
 
         try {
-            bookControl.delete(bookTitle);
-            return ResponseEntity.status(HttpStatus.CREATED).body(null);
+            BookDTO bookDTO = BookDTOAdapter.convertBookToBookDTO(bookControl.delete(bookTitle));
+            return ResponseEntity.status(HttpStatus.CREATED).body(bookDTO);
         }
         catch (BookException exception) {
             if(exception.getMessage().equals("Livro não encontrado."))
@@ -89,14 +89,14 @@ public class BookAPIImpl implements BookAPI {
     }
 
     @Override
-    @GetMapping(value = "/buscar-por-nome-autor/{bookTittle}")
+    @GetMapping(value = "/buscar-por-nome-autor/{authorName}")
     public ResponseEntity findByAuthor(@PathVariable String authorName) {
         try {
             List<BookDTO> bookDTOList = BookDTOAdapter
                     .convertBookListToBookDTOList(bookControl.findByAuthorName(authorName));
             return ResponseEntity.status(HttpStatus.OK).body(bookDTOList);
         } catch (BookException exception) {
-            if(exception.getMessage().equals("Livro não encontrado."))
+            if(exception.getMessage().equals("Nenhum livro relacionado ao autor."))
                 return ResponseEntity.status(HttpStatus.NO_CONTENT)
                         .body(ResponseErrorDTO.builder()
                                 .errorMessage(exception.getMessage())

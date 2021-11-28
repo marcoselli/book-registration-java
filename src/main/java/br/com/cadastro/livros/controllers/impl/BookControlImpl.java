@@ -7,6 +7,7 @@ import br.com.cadastro.livros.controllers.BookControl;
 import br.com.cadastro.livros.controllers.exception.BookException;
 import br.com.cadastro.livros.controllers.utils.BookUtil;
 import br.com.cadastro.livros.repositories.BookRepository;
+import br.com.cadastro.livros.repositories.entities.BookEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,20 +30,34 @@ public class BookControlImpl implements BookControl {
     }
 
     @Override
-    public void delete(String bookTitle) throws BookException {
+    public Book delete(String bookTitle) throws BookException {
         BookUtil.testTitleField(bookTitle);
-        bookRepository.delete(bookTitle);
+        Book book = findByTitle(bookTitle);
+        bookRepository.delete(bookRepository.findByTitle(bookTitle));
+        return book;
     }
 
     @Override
     public Book findByTitle(String bookTitle) throws BookException {
         BookUtil.testTitleField(bookTitle);
-        return BookAdapter.convertBookEntityToBook(bookRepository.findByTitle(bookTitle));
+        try{
+            return BookAdapter.convertBookEntityToBook(bookRepository.findByTitle(bookTitle));
+        }
+        catch (Exception e){
+           throw new BookException("Livro não encontrado.", "title");
+        }
     }
 
     @Override
     public List<Book> findByAuthorName(String authorName) throws BookException {
         BookUtil.testAuthorNameField(authorName);
-        return null;
+
+        List<Book> bookList = BookAdapter.convertBookEntityListToBookList(
+                bookRepository.findByAuthorName(authorName));
+
+        if(bookList.size() == 0)
+            throw new BookException("Nenhum livro relacionado ao autor.","title");
+
+        return bookList;
     }
 }
